@@ -1,0 +1,15 @@
+TODO
+----
+
+- Setup testing suite
+- Implement python version of fenton's function
+- test that python version works
+- create basic wrapper function 
+- write the trust region management function  (1, Algorithm 4.2)
+- epsilon_k rule (1, Algorithm 7.1)
+- steihaug trust region algorithm (1, Algorithm 7.2; 2)
+
+References
+[1] Jorge Nocedal and Stephen J. Wright, Numerical Optimization2 (Springer, 2006).
+[2] T. Steihaug, "The conjugate gradient method and trust region in large scale optimization", SIAM Journal on Optimization 20 (1983), pp. 626-637.
+
