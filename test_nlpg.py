@@ -26,7 +26,7 @@ def make_cute_func(x):
                    + 5*z[N-1]**2 )**2 );
 
 
-x_cute = np.ones(100)
+x_cute = np.ones(7)
 cute = fun_nlpg.Func_Object(nlpg.functions.make_cute_func(x_cute),
                             x_cute)
 
@@ -39,6 +39,18 @@ cute = fun_nlpg.Func_Object(make_cute_func(x_cute),
 
 sp_H=cute.sparse_hessian(x_cute)
 H=cute.hessian(x_cute)
+
+
+v = np.random.rand(7)
+out_v = np.zeros(7)
+for i in xrange(sp_H):
+    idx_1 = sp_H[1][i]
+    idx_2 = sp_H[2][i]
+    out_v[idx_1] += sp_H[3][i]*v[idx_2]
+    if idx_1 != idx_2:
+        out_v[idx_2] += sp_H[3][i]*v[idx_1]
+
+ 
 
 adolc.colpack\
     .sparse_hess_no_repeat(1,

@@ -137,3 +137,7 @@ def make_cute_func(x):
         + sum( ( z[I]**2 + 2*z[I+1]**2\
                    + 3*z[I+2]**2 + 4*z[I+3]**2 \
                    + 5*z[N-1]**2 )**2 );
+
+
+def sparse_hessian_multiplication(H,x):
+    pass
