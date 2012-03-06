@@ -83,6 +83,9 @@ class Func_Object:
             .sparse_hess_no_repeat(self.tape_number,
                                    np.ravel(x),
                                    [0,0])
+        return sparse_symm_matvec_mult(sp_H,vec)
+
+    def sparse_symm_matvec_mult(self,sp_H,vec):
         Hridx = sp_H[1]
         Hcidx = sp_H[2]
         Hval = sp_H[3]
@@ -98,8 +101,6 @@ class Func_Object:
                  outVec.ctypes.data,
                  nIdx)
         return outVec
-
-
 
 class Func_Object_Sparse:
     def __init__(self,func,x):
