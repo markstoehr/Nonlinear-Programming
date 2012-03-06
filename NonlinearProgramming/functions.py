@@ -5,9 +5,17 @@
 import adolc
 import numpy as np
 from scipy.sparse import coo_matrix
+import ctypes
+
 
 # constant for which tape number to use
 CUR_ADOLC_TAPE_NUMBER = 0
+
+# load the shared library for doing multiplication by
+# sparse symmetric matrices
+lib = ctypes.cdll['/home/mark/projects/Nonlinear-Programming/NonlinearProgramming/symm_matvec_mult.so']
+symm_matvec_mult = lib['symm_matvec_mult']
+
 
 class Func_Object:
     def __init__(self,func,x):
@@ -69,6 +77,28 @@ class Func_Object:
      #                     (sp_hess[1],
      #                      sp_hess[2])).tocsc()
             
+
+    def sparse_hessian_mult(self,x,vec):
+        sp_H = adolc.colpack\
+            .sparse_hess_no_repeat(self.tape_number,
+                                   np.ravel(x),
+                                   [0,0])
+        Hridx = sp_H[1]
+        Hcidx = sp_H[2]
+        Hval = sp_H[3]
+        nIdx = sp_H[0]
+        outVec = np.zeros(vec.size)
+        # shared library sparse multiplication
+        # symm_matvec_mult.c
+        # symm_matvec_mult.so
+        symm_matvec_mult(Hridx.ctypes.data,
+                 Hcidx.ctypes.data,
+                 Hval.ctypes.data,
+                 vec.ctypes.data,
+                 outVec.ctypes.data,
+                 nIdx)
+        return outVec
+
 
 
 class Func_Object_Sparse:
