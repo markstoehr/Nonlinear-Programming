@@ -1,0 +1,99 @@
+TODO
+- implement cauchy point finder
+  - compute break points
+  - sort them
+  - process them one by one
+- implement truncated CG
+
+
+- all vectors should be column vectors for this code	
+- test whether Cauchy point code works
+- right now need to adjust the truncated CG algorithm such that it responds to going outside the box boundary defined by U and L rather than the trust region defined by delta_k 
+- also the truncated CG does not keep the active set fixed, need to return that from the Cauchy point iteration
+- we need a program that recovers the point calculated by the cauchy iteration DONE
+- need to handle the case where we need to use infinity for the termination criterion, i.e. if we go through all the points
+- trace out execution for problems that should screw up the problem put a problem where the breaks are really close together towards the end
+
+- cg_truncated just exits if there aren't any coordinates to optimize after the cauchy projection.
+
+- tau_line_search needs to be updated so that way it handles the fact that sometimes a max is needed and somtime as min is needed depending on whether there is a negative sign on direction_d
+
+
+strange behavior:
+input is
+x = ones(4,1)
+u =[    4.3604
+    4.3461
+    3.0000
+    7.9953];
+l = [  0.3692
+    0.1112
+    0.7803
+    0.3897];
+f =[4
+     4
+     4
+     4]
+Q =[     1     0     0     0
+     0     1     0     0
+     0     0     1     0
+     0     0     0     1];
+
+and then the result is that
+x_cauchy =[   -4.3906
+   -4.3906
+    1.0000
+   -4.3906]
+
+with inactive_set = 1
+so we have violated boundary constraints, must investigate!!!
+
+Now getting the strange behavior that
+breaks = [0.0439
+    0.1221
+    0.1262
+    0.1778]
+min([2,1] == get_break_interval(2,breaks, .001));
+
+weird assignment problem
+
+while 1
+   
+      display(['Number of intervals processed has been ',num2str(hi)])
+      display(['f_prime is ',num2str(f_prime)])
+   
+    num_iterations = num_iterations +1;
+  if lo == 0
+      t_j = 0;
+    else
+      t_j = breaks(lo);
+  end
+    t_jp1 = breaks(min(end,hi));
+
+  display('t_j and t_jp1 set')
+ 
+  if f_prime > -tol
+      x = x+ t_j*p
+      break;
+  elseif ((0 <= gamma) && (gamma < (t_jp1 - t_j)))
+      x = x+gamma*p;
+      break;
+  elseif            ((t_jp1-t_j) < tol)
+      % already updated x at the end of the previous while loop iteration                 
+      break;
+  end
+
+  display('now doing update')
+
+   x = x + (t_jp1-t_j)*p;
+    [hi,lo] = get_break_interval(hi,breaks,tol);
+    p=update_p(p,t_bar_idx(lo:hi-1));
+    display('have new interval and updated p')
+    f_prime = get_f_prime(c,G,p,x);
+    f_dprime = get_f_dprime(p,G);
+    display('f_prime and f_dprime updated')
+    num_matvec = num_matvec +2;
+    gamma = - f_prime / f_dprime;
+
+  end
+
